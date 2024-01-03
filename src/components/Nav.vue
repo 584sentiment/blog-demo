@@ -142,7 +142,6 @@ onUnmounted(() => {
     position: fixed;
     top: 0;
     left: 0;
-
     .nav-list {
         position: fixed;
         aspect-ratio: 1;
