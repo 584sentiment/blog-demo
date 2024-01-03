@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { getRandom } from '@/utils/random'
 type ListItem = {
     label: string,
@@ -89,8 +89,9 @@ const dragTab = (e: MouseEvent) => {
     const { top, left } = el.getBoundingClientRect();
     const mouse2elx = mouseClickX - left;
     const mouse2ely = mouseClickY - top;
+    const zIndex = el.style.zIndex;
+    el.style.zIndex = '1000';
     const handleDrag = (e: MouseEvent) => {
-        const el = e.target as HTMLElement;
         const x = e.x;
         const y = e.y;
         el.style.top = y - mouse2ely + 'px';
@@ -102,11 +103,8 @@ const dragTab = (e: MouseEvent) => {
     document.addEventListener('mousemove', handleDrag);
     document.addEventListener('mouseup', () => {
         document.removeEventListener('mousemove', handleDrag);
-        edgeBar.forEach(el => el.classList.remove('show'));
-    })
-    el.addEventListener('mouseleave', () => {
-        document.removeEventListener('mousemove', handleDrag);
-        edgeBar.forEach(el => el.classList.remove('show'));
+        el.style.zIndex = zIndex;
+        edgeBar.forEach(bar => bar.classList.remove('show'));
     })
 }
 
@@ -114,10 +112,6 @@ const cancleAllAnimation = () => {
     for (const index of Object.keys(animations)) {
         cancelAnimationFrame(+index);
     }
-}
-
-const addListener = () => {
-
 }
 
 onMounted(() => {
@@ -165,6 +159,9 @@ onUnmounted(() => {
         justify-content: center;
         align-items: center;
         will-change: top, left;
+        span {
+            pointer-events: none;
+        }
     }
 
     .nav-edgebar {
