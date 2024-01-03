@@ -34,6 +34,7 @@ const start = () => {
         initElPos(tab);
         isTabMovable.set(tab, true);
         moveEl(tab);
+        tab.addEventListener('mousedown', dragTab);
     }
 }
 
@@ -116,7 +117,7 @@ const cancleAllAnimation = () => {
 }
 
 const addListener = () => {
-    
+
 }
 
 onMounted(() => {
