@@ -142,7 +142,6 @@ onUnmounted(() => {
     position: fixed;
     top: 0;
     left: 0;
-
     .nav-list {
         position: fixed;
         aspect-ratio: 1;
@@ -159,6 +158,7 @@ onUnmounted(() => {
         justify-content: center;
         align-items: center;
         will-change: top, left;
+
         span {
             pointer-events: none;
         }
