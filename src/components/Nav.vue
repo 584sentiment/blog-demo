@@ -159,6 +159,7 @@ onUnmounted(() => {
         justify-content: center;
         align-items: center;
         will-change: top, left;
+
         span {
             pointer-events: none;
         }
