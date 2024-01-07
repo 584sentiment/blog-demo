@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue';
-import { getRandom } from '@/utils/random'
+import { getRandom } from '@/utils/random';
+import DragModel, { NodePos } from '@/utils/DragModel';
+
 type ListItem = {
     label: string,
     value: string
@@ -31,10 +33,7 @@ const isTabMovable = new WeakMap();
 const start = () => {
     const tabs = document.querySelectorAll('.nav-list') as NodeListOf<HTMLElement>;
     for (const tab of tabs) {
-        initElPos(tab);
-        isTabMovable.set(tab, true);
-        moveEl(tab);
-        tab.addEventListener('mousedown', dragTab);
+        const ns = new DragModel(tab, viewWidth, viewHeight);
     }
 }
 
@@ -125,7 +124,7 @@ onUnmounted(() => {
 </script>
 <template>
     <div class="nav-container">
-        <div class="nav-list" v-for="item in props.list" @mouseover="stop" @mouseleave="continueMove">
+        <div class="nav-list" v-for="item in props.list">
             <span class="nav-list-item">
                 {{ item.label }}
             </span>
@@ -142,6 +141,7 @@ onUnmounted(() => {
     position: fixed;
     top: 0;
     left: 0;
+
     .nav-list {
         position: fixed;
         aspect-ratio: 1;
