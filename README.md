@@ -1,18 +1,9 @@
-# Vue 3 + TypeScript + Vite
+# Blog Demo
+该项目用于博客项目预研，主要用于预研博客中的组件。
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Nav 组件
+主要用于博客中的导航。我不想使用传统的顶部或者侧边导航。初步设计为随机移动的圆形。功能上与常规导航无异；呈现上为多个自由移动的小球（后期可考虑做成小虫子的形状，比如小蜘蛛、瓢虫之类的）。小球支持拖拽，可拖拽至屏幕两侧进行停靠。拖拽到其他小圆时，当中心间隔小于一定值时，两个小球将进行绑定。（如何取消绑定？暂时还没想好）。绑定后的小球可以集体停靠。
 
-## Recommended IDE Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Type Support For `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+## 关于博客其他功能的构想
+(语雀链接)[!https://www.yuque.com/g/sentimental-olsdx/agvgf3/lxfebgktynah0561/collaborator/join?token=17JpovZC1HIChw6Y&source=doc_collaborator# 《构想ｉｎｇ》]
+目前还在做nav组件的预研，博客整体的功能以在文章中记录，但是具体的呈现方式还在构思中。欢迎大家提供思路或者意见建议，也可以和我一起共建这个项目。
