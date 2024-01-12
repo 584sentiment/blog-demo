@@ -7,7 +7,7 @@ export default class DragModel {
     xDis: number = 0
     yDis: number = 0
     isMouseMoving: boolean = false
-    isNodeMoving: boolean = true
+    // isNodeMoving: boolean = true
     el: HTMLElement
     ns: NodePos
     constructor(el: HTMLElement, vw: number, vh: number) {
@@ -42,9 +42,9 @@ export default class DragModel {
         this.isMouseMoving = false;
     }
 
-    stopNodeMoving() {
-        this.isNodeMoving = false;
-    }
+    // stopNodeMoving() {
+    //     this.isNodeMoving = false;
+    // }
 
     startNodeMoveing() {
         this.isNodeMoving = true;
@@ -52,7 +52,6 @@ export default class DragModel {
 
     _move() {
         if (this.isNodeMoving) {
-            // this.el.style.transform = `translate(${this.ns.x}px ${this.ns.y}px 0)`;
             this.ns.update();
             this.el.style.left = `${this.ns.x}px`;
             this.el.style.top = `${this.ns.y}px`;
@@ -61,7 +60,6 @@ export default class DragModel {
     }
 
     init() {
-        this._move();
         this.el.addEventListener('mousedown', this._mouseDownHandler);
         this.el.addEventListener('mouseover', () => this.stopNodeMoving());
         this.el.addEventListener('mouseleave', () => this.startNodeMoveing());
@@ -110,5 +108,46 @@ export class NodePos {
             this.y = this.vh - this.height;
             this.speedY *= -1;
         }
+    }
+}
+
+// 记录所有节点对象，计算节点之间的距离，判断节点是否触碰
+
+class Nodes {
+    map = new WeakMap<HTMLElement, NodePos>();
+    els: HTMLElement[] = [];
+
+    add(el: HTMLElement, node: NodePos) {
+        this.map.set(el, node);
+        this.els.push(el);
+    }
+
+    isCover(e1: NodePos, e2: NodePos) {
+        const dis = (e1.x - e2.x) ** 2 + (e1.y - e2.y) ** 2;
+        const minDis = (e1.width + e2.width) ** 2;
+        return dis < minDis;
+    }
+
+    freshPos() {
+        const len = this.els.length;
+        for(let i = 0; i < len; i++) {
+            for(let j = 1; j < len; j++) {
+                const e1 = this.map.get(this.els[i]) as NodePos;
+                const e2 = this.map.get(this.els[j]) as NodePos;
+                if (!this.isCover(e1, e2)) {
+                    e1.update();
+                    e2.update();
+                    this.els[i].style.left = e1.x + 'px';
+                    this.els[j].style.left = e2.x + 'px';
+                    this.els[i].style.top = e1.y + 'px';
+                    this.els[j].style.top = e2.y + 'px';
+                }
+            }
+        }
+    }
+
+    play() {
+        this.freshPos()
+        requestAnimationFrame(() => this.play());
     }
 }

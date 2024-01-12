@@ -40,5 +40,8 @@ const tabMenu = [
 .container {
   display: flex;
   justify-content: space-evenly;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
 }
 </style>

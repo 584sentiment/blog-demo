@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue';
-import { getRandom } from '@/utils/random';
-import DragModel, { NodePos } from '@/utils/DragModel';
+import DragModel from '@/utils/DragModel';
 
 type ListItem = {
     label: string,
@@ -21,15 +20,6 @@ const initViewSize = () => {
     viewHeight = document.body.clientHeight;
 }
 
-// 先给每一个元素初始化一个位置
-const initElPos = (el: HTMLElement) => {
-    const left = getRandom(0, viewWidth);
-    const top = getRandom(0, viewHeight);
-    el.style.left = left + 'px';
-    el.style.top = top + 'px';
-}
-
-const isTabMovable = new WeakMap();
 const start = () => {
     const tabs = document.querySelectorAll('.nav-list') as NodeListOf<HTMLElement>;
     for (const tab of tabs) {
@@ -37,88 +27,14 @@ const start = () => {
     }
 }
 
-const move = (el: HTMLElement, sX: number, sY: number) => {
-    if (isTabMovable.get(el)) {
-        const { width, height } = el.getBoundingClientRect();
-        const cX = parseFloat(el.style.left);
-        const cY = parseFloat(el.style.top);
-        let nX = cX + sX;
-        let nY = cY + sY;
-        if (nX <= 0) {
-            nX = 0;
-            sX *= -1;
-        }
-        if (nX + width >= viewWidth) {
-            nX = viewWidth - width;
-            sX *= -1;
-        }
-        if (nY < 0) {
-            nY = 0;
-            sY *= -1;
-        }
-        if (nY + height >= viewHeight) {
-            nY = viewHeight - height;
-            sY *= -1;
-        }
-        el.style.top = `${nY}px`;
-        el.style.left = `${nX}px`
-    }
-    animations.set(el, requestAnimationFrame(() => { move(el, sX, sY) }));
-}
 
-const moveEl = (el: HTMLElement) => {
-    let sX = getRandom(0.1, 2);
-    let sY = getRandom(0.1, 2);
-    move(el, sX, sY);
-}
-
-const stop = (e: MouseEvent) => {
-    isTabMovable.set(e.target as HTMLElement, false)
-}
-
-const continueMove = (e: MouseEvent) => {
-    isTabMovable.set(e.target as HTMLElement, true)
-}
-
-// 鼠标拖动元素
-const dragTab = (e: MouseEvent) => {
-    const el = e.target as HTMLElement;
-    const mouseClickX = e.x;
-    const mouseClickY = e.y;
-    const { top, left } = el.getBoundingClientRect();
-    const mouse2elx = mouseClickX - left;
-    const mouse2ely = mouseClickY - top;
-    const zIndex = el.style.zIndex;
-    el.style.zIndex = '1000';
-    const handleDrag = (e: MouseEvent) => {
-        const x = e.x;
-        const y = e.y;
-        el.style.top = y - mouse2ely + 'px';
-        el.style.left = x - mouse2elx + 'px';
-    }
-    const edgeBar = document.querySelectorAll('.nav-edgebar');
-    edgeBar.forEach(el => el.classList.add('show'));
-
-    document.addEventListener('mousemove', handleDrag);
-    document.addEventListener('mouseup', () => {
-        document.removeEventListener('mousemove', handleDrag);
-        el.style.zIndex = zIndex;
-        edgeBar.forEach(bar => bar.classList.remove('show'));
-    })
-}
-
-const cancleAllAnimation = () => {
-    for (const index of Object.keys(animations)) {
-        cancelAnimationFrame(+index);
-    }
-}
 
 onMounted(() => {
     initViewSize();
     start();
 })
 onUnmounted(() => {
-    cancleAllAnimation()
+    // cancleAllAnimation()
 })
 
 </script>
@@ -135,6 +51,14 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+@keyframes rotateWave {
+    0% {
+        transform: rotate(0);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
 .nav-container {
     width: 100vw;
     height: 100vh;
@@ -145,9 +69,8 @@ onUnmounted(() => {
     .nav-list {
         position: fixed;
         aspect-ratio: 1;
-        border-radius: 50%;
-        border: 1px solid #eee;
-        box-shadow: 0 2px 5px #abc;
+        border-radius: 42% 38% 63% 49% / 45%;
+        background-color: #20ff41;
         padding: 5px;
         top: 0;
         left: 0;
@@ -158,6 +81,21 @@ onUnmounted(() => {
         justify-content: center;
         align-items: center;
         will-change: top, left;
+        animation: rotateWave 2s linear infinite;
+        filter: contrast(20);
+
+        &::after {
+            content: '';
+            display: block;
+            width: 94%;
+            height: 94%;
+            border-radius: 50%;
+            position: absolute;
+            top: 0%;
+            left: 0%;
+            background-color: black;
+            filter: contrast(20);
+        }
 
         span {
             pointer-events: none;
