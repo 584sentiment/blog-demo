@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue';
-import DragModel from '@/utils/DragModel';
+import DragModel, {NodePos, Nodes} from '@/utils/DragModel';
 
 type ListItem = {
     label: string,
@@ -13,21 +13,24 @@ const props = defineProps<Props>();
 
 let viewWidth: number;
 let viewHeight: number;
-let animations = new WeakMap<HTMLElement, number>();
 
 const initViewSize = () => {
     viewWidth = document.body.clientWidth;
     viewHeight = document.body.clientHeight;
 }
 
+const nodes = new Nodes();
+
 const start = () => {
     const tabs = document.querySelectorAll('.nav-list') as NodeListOf<HTMLElement>;
     for (const tab of tabs) {
-        const ns = new DragModel(tab, viewWidth, viewHeight);
+        const {width, height} = tab.getBoundingClientRect();
+        const np = new NodePos(viewWidth, viewHeight, width, height);
+        new DragModel(tab, np);
+        nodes.add(tab, np);
     }
+    nodes.play();
 }
-
-
 
 onMounted(() => {
     initViewSize();
@@ -93,8 +96,8 @@ onUnmounted(() => {
             position: absolute;
             top: 0%;
             left: 0%;
-            background-color: black;
-            filter: contrast(20);
+            
+            filter: blur(10px) contrast(20);
         }
 
         span {

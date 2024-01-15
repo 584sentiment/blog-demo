@@ -2,68 +2,43 @@ import { getRandom } from "./random"
 
 // 记录鼠标点击点和鼠标移动的距离
 export default class DragModel {
-    x: number = 0
-    y: number = 0
-    xDis: number = 0
-    yDis: number = 0
+    // x: number = 0
+    // y: number = 0
+    // xDis: number = 0
+    // yDis: number = 0
     isMouseMoving: boolean = false
-    // isNodeMoving: boolean = true
     el: HTMLElement
-    ns: NodePos
-    constructor(el: HTMLElement, vw: number, vh: number) {
+    np: NodePos
+    xDis = 0
+    yDis = 0
+    constructor(el: HTMLElement, nodePos: NodePos) {
         this.el = el;
-        const {width, height} = el.getBoundingClientRect();
-        this.ns = new NodePos(vw, vh, width, height);
+        this.np = nodePos;
         this.init();
     }
     _mouseDownHandler(e: MouseEvent) {
-        document.addEventListener('mousemove', this._mouseMoveHandler);
-        this.x = e.pageX;
-        this.y = e.pageY;
-        this.xDis = 0;
-        this.yDis = 0;
+        const {left, top} = this.el.getBoundingClientRect();
+        this.xDis = e.pageX - left;
+        this.yDis = e.pageY - top;
         this.isMouseMoving = true;
+        this.np.isDrag = true;
+        document.addEventListener('mousemove', this._mouseMoveHandler);
     }
     _mouseMoveHandler(e: MouseEvent) {
         if (!this.isMouseMoving) return;
-        this.xDis = e.pageX - this.x;
-        this.yDis = e.pageY - this.y;
-        console.log(`movex:${this.xDis} y:${this.yDis}`)
+        const newLeft = e.pageX - this.xDis;
+        const newTop = e.pageY - this.yDis;
+        this.np.update(newLeft, newTop);
     }
     _mouseUpHandler(e: MouseEvent) {
-        // this.el.removeEventListener('mousedown', this._mouseDownHandler);
-        // this.el.removeEventListener('mousedown', this._mouseDownHandler);
         document.removeEventListener('mousemove', this._mouseMoveHandler);
-        document.removeEventListener('mouseup', this._mouseUpHandler);
-        this.x = 0;
-        this.y = 0;
-        this.xDis = 0;
-        this.yDis = 0;
+        // document.removeEventListener('mouseup', this._mouseUpHandler);
         this.isMouseMoving = false;
-    }
-
-    // stopNodeMoving() {
-    //     this.isNodeMoving = false;
-    // }
-
-    startNodeMoveing() {
-        this.isNodeMoving = true;
-    }
-
-    _move() {
-        if (this.isNodeMoving) {
-            this.ns.update();
-            this.el.style.left = `${this.ns.x}px`;
-            this.el.style.top = `${this.ns.y}px`;
-        }
-        requestAnimationFrame(() => this._move());
     }
 
     init() {
         this.el.addEventListener('mousedown', this._mouseDownHandler);
-        this.el.addEventListener('mouseover', () => this.stopNodeMoving());
-        this.el.addEventListener('mouseleave', () => this.startNodeMoveing());
-        document.addEventListener('mouseup', this._mouseUpHandler);
+        this.el.addEventListener('mouseup', this._mouseUpHandler);
     }
 }
 
@@ -77,6 +52,7 @@ export class NodePos {
     vh: number
     width: number
     height: number
+    isDrag: boolean = false
 
     constructor(vw: number, vh: number, width: number, height: number) {
         this.vw = vw;
@@ -89,9 +65,9 @@ export class NodePos {
         this.height = height;
     }
 
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
+    update(x?: number, y?: number) {
+        this.x = x ? x : (this.x + this.speedX);
+        this.y = y ? y : (this.y + this.speedY);
         if (this.x <= 0) {
             this.x = 0;
             this.speedX *= -1;
@@ -113,7 +89,7 @@ export class NodePos {
 
 // 记录所有节点对象，计算节点之间的距离，判断节点是否触碰
 
-class Nodes {
+export class Nodes {
     map = new WeakMap<HTMLElement, NodePos>();
     els: HTMLElement[] = [];
 
